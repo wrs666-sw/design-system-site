@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NAV, TITLES } from './navConfig.js'
 import { useTheme } from './useTheme.js'
 import Home from './sections/Home.jsx'
@@ -38,12 +38,31 @@ const VIEWS = {
 
 export default function App() {
   const [active, setActive] = useState('home')
+  const [navOpen, setNavOpen] = useState(false)
   const { theme, toggle } = useTheme()
   const View = VIEWS[active] || Home
 
+  const openNav = (key) => {
+    setActive(key)
+    setNavOpen(false)
+  }
+
+  // Esc 关闭移动端抽屉
+  useEffect(() => {
+    if (!navOpen) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') setNavOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [navOpen])
+
   return (
     <div className="app">
-      <aside className="sidebar">
+      {navOpen && (
+        <div className="sidebar-mask" onClick={() => setNavOpen(false)} aria-hidden="true" />
+      )}
+      <aside className={'sidebar' + (navOpen ? ' open' : '')}>
         <div className="brand">
           <span className="brand-mark">D</span>
           <span>Design System</span>
@@ -55,7 +74,7 @@ export default function App() {
               <button
                 key={item.key}
                 className={'nav-item' + (active === item.key ? ' active' : '')}
-                onClick={() => setActive(item.key)}
+                onClick={() => openNav(item.key)}
               >
                 {item.label}
               </button>
@@ -66,16 +85,24 @@ export default function App() {
 
       <div className="main">
         <header className="topbar">
+          <button
+            className="menu-btn"
+            aria-label="打开导航菜单"
+            aria-expanded={navOpen}
+            onClick={() => setNavOpen((o) => !o)}
+          >
+            ☰
+          </button>
           <div className="topbar-title">{TITLES[active]}</div>
           <div className="topbar-actions">
-            <SearchBox onNavigate={setActive} />
+            <SearchBox onNavigate={openNav} />
             <button className="btn btn-secondary" onClick={toggle}>
               {theme === 'dark' ? '☀️ 亮色' : '🌙 暗色'}
             </button>
           </div>
         </header>
         <main className="content">
-          <View onNavigate={setActive} />
+          <View onNavigate={openNav} />
         </main>
       </div>
     </div>
