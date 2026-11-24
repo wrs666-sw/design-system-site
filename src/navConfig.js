@@ -1,3 +1,4 @@
+// 站点导航配置：key 与 App 中渲染的视图一一对应
 export const NAV = [
   {
     group: '入门',
@@ -23,6 +24,10 @@ export const NAV = [
       { key: 'feedback', label: '反馈组件' },
       { key: 'navigation', label: '导航组件' }
     ]
+  },
+  {
+    group: '我的资产',
+    items: [{ key: 'assets', label: '导入与自定义' }]
   }
 ]
 
