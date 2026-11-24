@@ -22,8 +22,13 @@ export const NAV = [
       { key: 'data-display', label: '数据展示' },
       { key: 'form', label: '表单组件' },
       { key: 'feedback', label: '反馈组件' },
-      { key: 'navigation', label: '导航组件' }
+      { key: 'navigation', label: '导航组件' },
+      { key: 'snippets', label: '组件源码' }
     ]
+  },
+  {
+    group: '工具',
+    items: [{ key: 'editor', label: '主题编辑器' }]
   },
   {
     group: '我的资产',
