@@ -14,6 +14,8 @@ import Form from './sections/Form.jsx'
 import Feedback from './sections/Feedback.jsx'
 import Navigation from './sections/Navigation.jsx'
 import Assets from './sections/Assets.jsx'
+import Snippets from './sections/Snippets.jsx'
+import ThemeEditor from './sections/ThemeEditor.jsx'
 
 const VIEWS = {
   home: Home,
@@ -28,7 +30,9 @@ const VIEWS = {
   form: Form,
   feedback: Feedback,
   navigation: Navigation,
-  assets: Assets
+  assets: Assets,
+  snippets: Snippets,
+  editor: ThemeEditor
 }
 
 export default function App() {
