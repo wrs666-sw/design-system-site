@@ -177,6 +177,7 @@ function IconPanel({ icons, onAdd, onRemove }) {
   const [name, setName] = useState('')
   const [svg, setSvg] = useState('')
   const [error, setError] = useState('')
+  const fileRef = useRef(null)
 
   const submit = () => {
     const clean = sanitizeSvg(svg)
@@ -190,11 +191,38 @@ function IconPanel({ icons, onAdd, onRemove }) {
     setError('')
   }
 
+  const onIconFile = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const fallbackName = file.name.replace(/\.[^.]+$/, '')
+    if (file.type === 'image/svg+xml' || /\.svg$/i.test(file.name)) {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const clean = sanitizeSvg(String(reader.result))
+        if (!clean.includes('<svg')) {
+          setError('SVG 文件内容无效')
+          return
+        }
+        onAdd({ name: name.trim() || fallbackName, svg: clean })
+        setName(''); setSvg(''); setError('')
+      }
+      reader.readAsText(file)
+    } else {
+      const reader = new FileReader()
+      reader.onload = () => {
+        onAdd({ name: name.trim() || fallbackName, image: reader.result })
+        setName(''); setSvg(''); setError('')
+      }
+      reader.readAsDataURL(file)
+    }
+    e.target.value = ''
+  }
+
   return (
-    <Section title="自定义图标" desc="粘贴 SVG 代码（24px 视图框建议），脚本与事件属性会被自动过滤。">
+    <Section title="自定义图标" desc="粘贴 SVG 代码，或直接上传 SVG / 图片文件；脚本与事件属性会被自动过滤。">
       <div className="panel">
         <div className="field">
-          <label>图标名称</label>
+          <label>图标名称（上传图片时可留空，默认取文件名）</label>
           <input className="input" style={{ maxWidth: 240 }} placeholder="例如：收藏" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div className="field">
@@ -202,13 +230,23 @@ function IconPanel({ icons, onAdd, onRemove }) {
           <textarea className="input" style={{ maxWidth: '100%', minHeight: 96, fontFamily: 'monospace' }} placeholder={'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3 6h6l-5 4 2 6-6-4-6 4 2-6-5-4h6z"/></svg>'} value={svg} onChange={(e) => setSvg(e.target.value)} />
           {error && <div style={{ color: 'var(--color-danger)', fontSize: 12, marginTop: 6 }}>{error}</div>}
         </div>
-        <button className="btn btn-primary" onClick={submit}>添加图标</button>
+        <div className="demo-row">
+          <button className="btn btn-primary" onClick={submit}>添加图标</button>
+          <button className="btn btn-secondary" onClick={() => fileRef.current?.click()}>上传 SVG / 图片</button>
+          <input ref={fileRef} type="file" accept=".svg,image/*" style={{ display: 'none' }} onChange={onIconFile} />
+        </div>
 
         {icons.length > 0 ? (
           <div className="panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 16, marginTop: 16, background: 'transparent' }}>
             {icons.map((i) => (
               <div key={i.name} className="card" style={{ textAlign: 'center' }}>
-                <div style={{ display: 'grid', placeItems: 'center', height: 48 }} dangerouslySetInnerHTML={{ __html: i.svg }} />
+                <div style={{ display: 'grid', placeItems: 'center', height: 48 }}>
+                  {i.image ? (
+                    <img src={i.image} alt={i.name} style={{ maxWidth: 48, maxHeight: 48 }} />
+                  ) : (
+                    <div dangerouslySetInnerHTML={{ __html: i.svg }} />
+                  )}
+                </div>
                 <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginTop: 6 }}>{i.name}</div>
                 <button className="btn btn-ghost btn-sm" style={{ color: 'var(--color-danger)' }} onClick={() => onRemove(i.name)}>删除</button>
               </div>
@@ -237,7 +275,7 @@ function ComponentPanel({ components, onAdd, onRemove }) {
   }
 
   return (
-    <Section title="自定义组件片段" desc="收录组件名称、说明与示例代码，页面展示并支持一键复制。">
+    <Section title="自定义组件片段" desc="收录组件名称、说明与示例代码；下方即时预览静态 HTML，代码片段支持一键复制。">
       <div className="panel">
         <div className="demo-row">
           <input className="input" style={{ maxWidth: 200 }} placeholder="组件名称" value={name} onChange={(e) => setName(e.target.value)} />
@@ -247,6 +285,12 @@ function ComponentPanel({ components, onAdd, onRemove }) {
           <label>示例代码</label>
           <textarea className="input" style={{ maxWidth: '100%', minHeight: 96, fontFamily: 'monospace' }} placeholder={'<button class="btn btn-primary">主要按钮</button>'} value={code} onChange={(e) => setCode(e.target.value)} />
         </div>
+        {code.trim() && (
+          <div className="field">
+            <label>即时预览</label>
+            <div className="panel" dangerouslySetInnerHTML={{ __html: code }} />
+          </div>
+        )}
         <button className="btn btn-primary" onClick={submit}>添加片段</button>
 
         {components.length > 0 ? (
@@ -258,6 +302,7 @@ function ComponentPanel({ components, onAdd, onRemove }) {
                   <button className="btn btn-ghost btn-sm" style={{ color: 'var(--color-danger)' }} onClick={() => onRemove(c.name)}>删除</button>
                 </div>
                 {c.desc && <div className="card-desc" style={{ marginBottom: 8 }}>{c.desc}</div>}
+                <div className="panel" style={{ marginBottom: 12 }} dangerouslySetInnerHTML={{ __html: c.code }} />
                 <CodeBlock code={c.code} />
               </div>
             ))}
