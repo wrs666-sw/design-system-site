@@ -53,7 +53,7 @@ function normalize(data) {
   const arr = (v) => (Array.isArray(v) ? v : [])
   return {
     colors: arr(data.colors).filter((c) => c && c.name && c.value),
-    icons: arr(data.icons).filter((i) => i && i.name && i.svg),
+    icons: arr(data.icons).filter((i) => i && i.name && (i.svg || i.image)),
     components: arr(data.components).filter((c) => c && c.name && c.code)
   }
 }
