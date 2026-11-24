@@ -16,6 +16,7 @@ import Navigation from './sections/Navigation.jsx'
 import Assets from './sections/Assets.jsx'
 import Snippets from './sections/Snippets.jsx'
 import ThemeEditor from './sections/ThemeEditor.jsx'
+import SearchBox from './components/SearchBox.jsx'
 
 const VIEWS = {
   home: Home,
@@ -67,6 +68,7 @@ export default function App() {
         <header className="topbar">
           <div className="topbar-title">{TITLES[active]}</div>
           <div className="topbar-actions">
+            <SearchBox onNavigate={setActive} />
             <button className="btn btn-secondary" onClick={toggle}>
               {theme === 'dark' ? '☀️ 亮色' : '🌙 暗色'}
             </button>
