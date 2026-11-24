@@ -3,19 +3,32 @@ import Section from '../components/Section.jsx'
 import ApiTable from '../components/ApiTable.jsx'
 import CodeBlock from '../components/CodeBlock.jsx'
 
+const validate = (form) => {
+  const next = {}
+  if (!form.name.trim()) next.name = '请输入名称'
+  if (!/^\S+@\S+\.\S+$/.test(form.mail)) next.mail = '请输入有效邮箱'
+  return next
+}
+
 export default function Form() {
   const [switchOn, setSwitchOn] = useState(true)
   const [checked, setChecked] = useState(['邮件通知'])
   const [gender, setGender] = useState('女生')
   const [form, setForm] = useState({ name: '', mail: '' })
   const [errors, setErrors] = useState({})
+  const [submitted, setSubmitted] = useState(false)
+
+  const setField = (field, value) => {
+    setForm((f) => ({ ...f, [field]: value }))
+    setErrors((e) => ({ ...e, [field]: undefined }))
+    setSubmitted(false)
+  }
 
   const onSubmit = (e) => {
     e.preventDefault()
-    const next = {}
-    if (!form.name.trim()) next.name = '请输入名称'
-    if (!/^\S+@\S+\.\S+$/.test(form.mail)) next.mail = '请输入有效邮箱'
+    const next = validate(form)
     setErrors(next)
+    setSubmitted(Object.keys(next).length === 0)
   }
 
   const toggleCheck = (label) => {
@@ -32,15 +45,15 @@ export default function Form() {
       <Section title="输入框 Input" desc="支持占位提示与错误状态。">
         <div className="panel">
           <div className="field">
-            <label>名称</label>
-            <input className="input" placeholder="请输入名称" value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <label htmlFor="demo-name">名称</label>
+            <input id="demo-name" className="input" placeholder="请输入名称" value={form.name}
+              onChange={(e) => setField('name', e.target.value)} />
             {errors.name && <div style={{ color: 'var(--color-danger)', fontSize: 12, marginTop: 6 }}>{errors.name}</div>}
           </div>
           <div className="field">
-            <label>邮箱</label>
-            <input className="input" placeholder="name@example.com" value={form.mail}
-              onChange={(e) => setForm({ ...form, mail: e.target.value })} />
+            <label htmlFor="demo-mail">邮箱</label>
+            <input id="demo-mail" className="input" placeholder="name@example.com" value={form.mail}
+              onChange={(e) => setField('mail', e.target.value)} />
             {errors.mail && <div style={{ color: 'var(--color-danger)', fontSize: 12, marginTop: 6 }}>{errors.mail}</div>}
           </div>
         </div>
@@ -49,8 +62,8 @@ export default function Form() {
       <Section title="选择器 Select" desc="下拉选择单一项。">
         <div className="panel">
           <div className="field">
-            <label>所属分类</label>
-            <select className="select" defaultValue="基础">
+            <label htmlFor="demo-category">所属分类</label>
+            <select id="demo-category" className="select" defaultValue="基础">
               <option>基础</option>
               <option>表单</option>
               <option>反馈</option>
@@ -84,24 +97,36 @@ export default function Form() {
 
       <Section title="开关 Switch" desc="表达即时生效的二态设置。">
         <div className="panel demo-row">
-          <button className={'switch' + (switchOn ? ' on' : '')} onClick={() => setSwitchOn(!switchOn)}
-            aria-label="开关" />
+          <button
+            className={'switch' + (switchOn ? ' on' : '')}
+            role="switch"
+            aria-checked={switchOn}
+            aria-label="通知开关"
+            onClick={() => setSwitchOn(!switchOn)}
+          />
           <span>{switchOn ? '已开启' : '已关闭'}</span>
         </div>
       </Section>
 
-      <Section title="表单校验示例" desc="提交时校验必填与格式，错误信息落在对应字段下方。">
+      <Section title="表单校验示例" desc="提交时校验必填与格式；输入时即时清除对应错误，通过后显示成功状态。">
         <div className="panel">
-          <form onSubmit={onSubmit}>
+          <form onSubmit={onSubmit} noValidate>
             <div className="field">
-              <label>名称</label>
-              <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <label htmlFor="form-name">名称</label>
+              <input id="form-name" className="input" value={form.name} onChange={(e) => setField('name', e.target.value)} />
+              {errors.name && <div style={{ color: 'var(--color-danger)', fontSize: 12, marginTop: 6 }}>{errors.name}</div>}
             </div>
             <div className="field">
-              <label>邮箱</label>
-              <input className="input" value={form.mail} onChange={(e) => setForm({ ...form, mail: e.target.value })} />
+              <label htmlFor="form-mail">邮箱</label>
+              <input id="form-mail" className="input" value={form.mail} onChange={(e) => setField('mail', e.target.value)} />
+              {errors.mail && <div style={{ color: 'var(--color-danger)', fontSize: 12, marginTop: 6 }}>{errors.mail}</div>}
             </div>
             <button className="btn btn-primary" type="submit">提交</button>
+            {submitted && (
+              <div style={{ color: 'var(--color-success)', fontSize: 13, marginTop: 10 }} role="status">
+                ✓ 校验通过，表单已提交
+              </div>
+            )}
           </form>
         </div>
         <ApiTable
