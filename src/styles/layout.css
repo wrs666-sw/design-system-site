@@ -96,6 +96,8 @@
 .topbar-title {
   font-size: var(--font-lg);
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .topbar-actions {
@@ -255,8 +257,15 @@
     gap: 10px;
   }
 
+  /* 窄屏隐藏顶栏标题：内容区已有同名大标题，避免标题被挤压换行 */
+  .topbar-title {
+    display: none;
+  }
+
   .search-box {
-    width: 150px;
+    flex: 1;
+    min-width: 0;
+    width: auto;
   }
 
   .content {
