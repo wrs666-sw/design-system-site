@@ -1,4 +1,5 @@
 import Section from '../components/Section.jsx'
+import { contrastRatio, grade } from '../a11y.js'
 
 const PRIMARY = [
   { name: '主色', value: '#2563eb', token: '--color-primary' },
@@ -23,34 +24,6 @@ const NEUTRAL = [
   { name: '容器背景', value: '#ffffff', token: '--color-bg-container' },
   { name: '边框', value: '#e5e7eb', token: '--color-border' }
 ]
-
-function channel(c) {
-  c /= 255
-  return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
-}
-
-function luminance(hex) {
-  const h = hex.replace('#', '')
-  const n = parseInt(h, 16)
-  const r = channel((n >> 16) & 255)
-  const g = channel((n >> 8) & 255)
-  const b = channel(n & 255)
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b
-}
-
-function contrastRatio(a, b) {
-  const l1 = luminance(a)
-  const l2 = luminance(b)
-  const [max, min] = l1 >= l2 ? [l1, l2] : [l2, l1]
-  return (max + 0.05) / (min + 0.05)
-}
-
-function grade(ratio) {
-  if (ratio >= 7) return 'AAA'
-  if (ratio >= 4.5) return 'AA'
-  if (ratio >= 3) return 'AA（大字）'
-  return '不达标'
-}
 
 function SwatchGroup({ title, desc, items, showContrast }) {
   return (
