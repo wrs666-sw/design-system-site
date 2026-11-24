@@ -7,7 +7,8 @@ const CARDS = [
   { key: 'basic', title: '基础组件', desc: '按钮、标签、头像、徽标等通用元素。' },
   { key: 'form', title: '表单组件', desc: '输入、选择、开关与校验反馈。' },
   { key: 'feedback', title: '反馈组件', desc: '消息提示、对话框、抽屉与空状态。' },
-  { key: 'navigation', title: '导航组件', desc: '标签页、面包屑、分页与步骤条。' }
+  { key: 'navigation', title: '导航组件', desc: '标签页、面包屑、分页与步骤条。' },
+  { key: 'assets', title: '导入与自定义', desc: '加入自己的配色、图标与组件代码片段。' }
 ]
 
 export default function Home({ onNavigate }) {
