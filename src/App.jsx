@@ -13,6 +13,7 @@ import DataDisplay from './sections/DataDisplay.jsx'
 import Form from './sections/Form.jsx'
 import Feedback from './sections/Feedback.jsx'
 import Navigation from './sections/Navigation.jsx'
+import Assets from './sections/Assets.jsx'
 
 const VIEWS = {
   home: Home,
@@ -26,7 +27,8 @@ const VIEWS = {
   'data-display': DataDisplay,
   form: Form,
   feedback: Feedback,
-  navigation: Navigation
+  navigation: Navigation,
+  assets: Assets
 }
 
 export default function App() {
